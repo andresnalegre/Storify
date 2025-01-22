@@ -1,2 +1,0 @@
-# Storify
-React Project
