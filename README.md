@@ -1,7 +1,7 @@
 
 # Storify
 
-**Storify** is a React project where I showcase my skills with React and Bootstrap. The goal of this project is to create a simple data storage solution that works locally and can be easily adapted for enterprise environments.
+**Storify** is a React project where I showcase my skills with React and PHP. The goal of this project is to create a simple data storage solution that works with MariaDB and can be easily adapted for enterprise environments.
 
 ---
 
@@ -16,10 +16,12 @@
 ## Technologies Used
 
 - React
+- PHP
+- MariaDB
 
 ---
 
-## How to use
+## How to use the app
 
 1. **Clone the Project**:
    - Open your terminal, go to the folder where you want to save the project, and run:
@@ -39,8 +41,51 @@
    - Run the project with:
 
      ```bash
+     npm install
      npm start
      ```
+
+## How to Access MariaDB
+
+1. **Open Another Terminal**:
+   - Inside the project folder, run:
+
+     ```bash
+     mysql -u root -p
+     ```
+
+1. **Log in to MariaDB**:  
+   - Enter the password:
+
+     ```text
+     admin
+     ```
+     
+2. **Select the Storify Database**:  
+
+     ```sql
+     USE storify;
+     ```
+     
+3. **Analyze Stored Data**:  
+   - Get the total number of stored files:  
+
+     ```sql
+     SELECT COUNT(*) AS total_files FROM files;
+     ```
+     
+   - search all stored files:  
+
+     ```sql
+     SELECT * FROM files;
+     ```
+     
+   - Count files by type:  
+
+     ```sql
+     SELECT type, COUNT(*) AS count FROM files GROUP BY type;
+     ```
+     
 ---
 
 ## License
