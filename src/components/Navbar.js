@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import {
   AppBar,
   Toolbar,
-  Typography,
   Button,
   Box,
   Container,
@@ -13,10 +12,9 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-} from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: 'white',
@@ -34,16 +32,16 @@ const LogoContainer = styled(Link)(({ theme }) => ({
 }));
 
 const Logo = styled('img')(({ theme }) => ({
-  width: 32,
+  width: 150,
   height: 'auto',
   marginRight: theme.spacing(1),
 }));
 
-const NavButton = styled(Button)(({ theme, active }) => ({
+const NavButton = styled(Button)(({ theme, isActive }) => ({
   marginLeft: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(1, 3),
-  ...(active && {
+  ...(isActive && {
     backgroundColor: theme.palette.primary.main,
     color: 'white',
     '&:hover': {
@@ -77,33 +75,11 @@ const Navbar = () => {
     <StyledAppBar position="fixed">
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-        <LogoContainer to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', userSelect: 'none' }}>
-          <Logo
-            src="/logo512.png"
-            alt="Storify Logo"
-            sx={{
-              width: 40,
-              height: 'auto',
-              marginRight: 1,
-            }}
-          />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 500,
-              fontFamily: '"Poppins", sans-serif',
-              fontSize: { xs: '1.5rem', sm: '2rem' },
-              letterSpacing: 2,
-              color: 'primary.main',
-              textTransform: 'uppercase',
-              textShadow: '2px 2px 5px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            Storify
-          </Typography>
-        </LogoContainer>
+          <LogoContainer to="/">
+            <Logo src={logo} alt="Storify Logo" />
+          </LogoContainer>
 
-        <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ flexGrow: 1 }} />
           {isMobile ? (
             <>
               <IconButton
@@ -150,7 +126,7 @@ const Navbar = () => {
                   to={item.path}
                   variant={isActive(item.path) ? "contained" : "text"}
                   color="primary"
-                  active={isActive(item.path)}
+                  isActive={isActive(item.path)}
                 >
                   {item.label}
                 </NavButton>

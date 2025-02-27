@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import { styled } from '@mui/material/styles';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Container,
   Card,
@@ -10,7 +9,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  Chip,
   Button,
   Box,
   Dialog,
@@ -23,6 +21,7 @@ import {
   MenuItem,
   TextField,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 import {
   InsertDriveFile,
@@ -40,31 +39,10 @@ import {
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useFiles } from '../context/FileContext';
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  boxShadow: '0 4px 20px rgba(108, 99, 255, 0.1)',
-}));
-
-const ListHeader = styled('div')(({ theme }) => ({
-  padding: theme.spacing(3),
-  borderBottom: `1px solid ${theme.palette.divider}`,
-  backgroundColor: 'rgba(108, 99, 255, 0.02)',
-}));
-
-const StyledListItem = styled(ListItem)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(1),
-  '&:hover': {
-    backgroundColor: 'rgba(108, 99, 255, 0.05)',
-  },
-}));
-
-const SearchBar = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(2),
-}));
+import '../styles/theme.css';
 
 const FileList = () => {
-  const { files, deleteFile, downloadFile } = useFiles();
+  const { files, setFiles } = useFiles();
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -74,22 +52,74 @@ const FileList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
+  const [loading, setLoading] = useState(true);
+
+  const showSnackbar = useCallback((message, severity = 'success') => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setOpenSnackbar(true);
+  }, []);
+
+  const fetchFiles = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8000/getFiles.php', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const uniqueFiles = Array.from(
+          new Map(data.files.map(file => [`${file.name}-${file.path}`, file])).values()
+        );
+        
+        setFiles(uniqueFiles.map(file => ({
+          ...file,
+          size: parseInt(file.size, 10)
+        })));
+      } else {
+        throw new Error(data.error || 'Failed to load files');
+      }
+    } catch (error) {
+      console.error('Error fetching files:', error);
+      showSnackbar('Error loading files: ' + error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [setFiles, showSnackbar]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
+  const fileIcons = {
+    image: <Image color="primary" />,
+    pdf: <PictureAsPdf color="error" />,
+    video: <VideoLibrary color="secondary" />,
+    word: <Description color="primary" />,
+    excel: <TableChart color="success" />,
+    default: <InsertDriveFile color="primary" />,
+  };
 
   const getFileIcon = (fileType) => {
-    switch (fileType) {
-      case 'image':
-        return <Image color="primary" />;
-      case 'pdf':
-        return <PictureAsPdf color="error" />;
-      case 'video':
-        return <VideoLibrary color="secondary" />;
-      case 'word':
-        return <Description color="primary" />;
-      case 'excel':
-        return <TableChart color="success" />;
-      default:
-        return <InsertDriveFile color="primary" />;
-    }
+    if (!fileType) return fileIcons.default;
+    
+    const type = fileType.toLowerCase();
+    if (type.includes('image')) return fileIcons.image;
+    if (type.includes('pdf')) return fileIcons.pdf;
+    if (type.includes('video')) return fileIcons.video;
+    if (type.includes('word') || type.includes('document')) return fileIcons.word;
+    if (type.includes('sheet') || type.includes('excel')) return fileIcons.excel;
+    return fileIcons.default;
   };
 
   const filteredAndSortedFiles = useMemo(() => {
@@ -105,11 +135,20 @@ const FileList = () => {
             return direction * a.name.localeCompare(b.name);
           case 'size':
             return direction * (parseInt(a.size) - parseInt(b.size));
-          default: // date
+          default:
             return direction * (new Date(b.uploadDate) - new Date(a.uploadDate));
         }
       });
   }, [files, searchTerm, sortBy, sortDirection]);
+
+  const handleSort = (newSortBy) => {
+    if (sortBy === newSortBy) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(newSortBy);
+      setSortDirection('asc');
+    }
+  };
 
   const handleMenuClick = (event, file) => {
     setAnchorEl(event.currentTarget);
@@ -125,30 +164,64 @@ const FileList = () => {
     handleMenuClose();
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     try {
-      deleteFile(selectedFile.id);
-      setOpenDeleteDialog(false);
-      showSnackbar('File deleted successfully', 'success');
+      const response = await fetch('http://localhost:8000/getFiles.php', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: selectedFile.id })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setFiles(prevFiles => prevFiles.filter(file => file.id !== selectedFile.id));
+        setOpenDeleteDialog(false);
+        showSnackbar('File deleted successfully', 'success');
+      } else {
+        throw new Error(data.error || 'Failed to delete file');
+      }
     } catch (error) {
-      showSnackbar('Error deleting file', 'error');
+      console.error('Delete error:', error);
+      showSnackbar('Error deleting file: ' + error.message, 'error');
     }
   };
 
   const handleDownload = async () => {
-    const success = await downloadFile(selectedFile);
-    if (success) {
+    try {
+      const response = await fetch(`http://localhost:8000/getFiles.php?download=true&id=${selectedFile.id}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = selectedFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
       showSnackbar('Download started successfully', 'success');
-    } else {
-      showSnackbar('Error downloading file', 'error');
+    } catch (error) {
+      console.error('Download error:', error);
+      showSnackbar('Error downloading file: ' + error.message, 'error');
     }
     handleMenuClose();
-  };
-
-  const showSnackbar = (message, severity = 'success') => {
-    setSnackbarMessage(message);
-    setSnackbarSeverity(severity);
-    setOpenSnackbar(true);
   };
 
   const formatDate = (date) => {
@@ -161,34 +234,42 @@ const FileList = () => {
     });
   };
 
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  if (loading) {
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
   return (
-    <Container sx={{ mt: 10, p: 3 }}>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 3 
-      }}>
+    <Container className="file-list-container">
+      <Box className="header-box">
         <Typography variant="h4" color="primary">
           My Files
         </Typography>
-        <Link to="/upload" style={{ textDecoration: 'none' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-          >
+        <Link to="/upload" className="no-decoration">
+          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
             Upload New File
           </Button>
         </Link>
       </Box>
 
-      <StyledCard>
-        <ListHeader>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Card className="styled-card">
+        <div className="list-header">
+          <div className="list-header-content">
             <Typography variant="h6">Recent Files</Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <SearchBar
+            <div className="search-controls">
+              <TextField
+                className="search-bar"
                 size="small"
                 variant="outlined"
                 placeholder="Search files..."
@@ -202,26 +283,40 @@ const FileList = () => {
                   ),
                 }}
               />
-              <Button
-                startIcon={<SortIcon />}
-                onClick={() => {
-                  setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-                }}
-              >
-                Sort
-              </Button>
-            </Box>
-          </Box>
-        </ListHeader>
+              <div className="sort-buttons">
+                <Button
+                  size="small"
+                  onClick={() => handleSort('name')}
+                  startIcon={<SortIcon />}
+                >
+                  Name {sortBy === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </Button>
+                <Button
+                  size="small"
+                  onClick={() => handleSort('date')}
+                  startIcon={<SortIcon />}
+                >
+                  Date {sortBy === 'date' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </Button>
+                <Button
+                  size="small"
+                  onClick={() => handleSort('size')}
+                  startIcon={<SortIcon />}
+                >
+                  Size {sortBy === 'size' && (sortDirection === 'asc' ? '↑' : '↓')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {filteredAndSortedFiles.length > 0 ? (
-          <List sx={{ p: 2 }}>
+          <List className="file-list">
             {filteredAndSortedFiles.map((file) => (
-              <StyledListItem key={file.id}>
+              <ListItem key={file.id} className="list-item">
                 <ListItemIcon>
-                  {getFileIcon(file.icon)}
+                  {getFileIcon(file.type)}
                 </ListItemIcon>
-
                 <ListItemText
                   primary={file.name}
                   secondary={
@@ -229,12 +324,11 @@ const FileList = () => {
                       {file.path}
                       <br />
                       <Typography variant="caption" color="text.secondary">
-                        {file.size} • Updated {formatDate(file.uploadDate)}
+                        {formatFileSize(file.size)} • Updated {formatDate(file.uploadDate)}
                       </Typography>
                     </>
                   }
                 />
-
                 <ListItemSecondaryAction>
                   <IconButton
                     size="small"
@@ -243,25 +337,12 @@ const FileList = () => {
                     <MoreVertIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
-              </StyledListItem>
+              </ListItem>
             ))}
           </List>
         ) : (
-          <Box sx={{ 
-            textAlign: 'center', 
-            p: 6,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <InsertDriveFile 
-              sx={{ 
-                fontSize: 48, 
-                color: 'text.secondary',
-                opacity: 0.5
-              }} 
-            />
+          <div className="empty-state">
+            <InsertDriveFile className="empty-state-icon" />
             <Typography variant="h6" color="text.secondary" gutterBottom>
               {searchTerm ? 'No files found' : 'No files uploaded yet'}
             </Typography>
@@ -269,36 +350,34 @@ const FileList = () => {
               {searchTerm ? 'Try different search terms' : 'Start by uploading your first file'}
             </Typography>
             {!searchTerm && (
-              <Link to="/upload" style={{ textDecoration: 'none' }}>
+              <Link to="/upload" className="no-decoration">
                 <Button
                   variant="outlined"
                   color="primary"
                   startIcon={<AddIcon />}
-                  sx={{ mt: 2 }}
+                  className="upload-button"
                 >
                   Upload File
                 </Button>
               </Link>
             )}
-          </Box>
+          </div>
         )}
-      </StyledCard>
+      </Card>
 
-      {/* Menu Actions */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleDownload}>
-          <GetApp sx={{ mr: 1 }} /> Download
+          <GetApp className="menu-icon" /> Download
         </MenuItem>
         <MenuItem onClick={handleDelete}>
-          <Delete sx={{ mr: 1 }} /> Delete
+          <Delete className="menu-icon" /> Delete
         </MenuItem>
       </Menu>
 
-      {/* Dialog Confirmation */}
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -325,7 +404,6 @@ const FileList = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Feedback Alert */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={4000}
@@ -336,7 +414,7 @@ const FileList = () => {
           onClose={() => setOpenSnackbar(false)} 
           severity={snackbarSeverity}
           variant="filled"
-          sx={{ width: '100%' }}
+          className="alert"
         >
           {snackbarMessage}
         </Alert>

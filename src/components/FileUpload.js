@@ -11,6 +11,10 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -54,12 +58,13 @@ const FileUpload = () => {
   const [uploadComplete, setUploadComplete] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [error, setError] = useState(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [existingFileData, setExistingFileData] = useState(null);
 
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
-    setFile(droppedFile);
-    setError(null);
+    validateAndSetFile(droppedFile);
   };
 
   const handleDragOver = (e) => {
@@ -68,7 +73,19 @@ const FileUpload = () => {
 
   const handleFileSelect = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    validateAndSetFile(selectedFile);
+  };
+
+  const validateAndSetFile = (file) => {
+    if (!file) return;
+
+    const maxSize = 100 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError('File size exceeds 100MB limit');
+      return;
+    }
+
+    setFile(file);
     setError(null);
   };
 
@@ -94,39 +111,80 @@ const FileUpload = () => {
     return true;
   };
 
-  const handleUpload = async () => {
+  const handleUploadSuccess = (data) => {
+    setProgress(100);
+    setUploadComplete(true);
+    setOpenSnackbar(true);
+
+    addFile(data.file);
+
+    setTimeout(() => {
+      setFile(null);
+      setUrlPath('');
+      setProgress(0);
+      setUploadComplete(false);
+      navigate('/files');
+    }, 1500);
+  };
+
+  const handleUpload = async (replace = false) => {
     if (!validateForm()) return;
 
     setUploading(true);
     setError(null);
-    
+
     try {
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        setProgress(i);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('path', urlPath);
+      if (replace) {
+        formData.append('replace', 'true');
       }
 
-      addFile({ 
-        file, 
-        urlPath,
-        uploadDate: new Date().toISOString()
-      });
-      
-      setUploadComplete(true);
-      setOpenSnackbar(true);
+      const simulateProgress = () => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 90) {
+            return prevProgress;
+          }
+          return prevProgress + 10;
+        });
+      };
 
-      setTimeout(() => {
-        setFile(null);
-        setUrlPath('');
-        setProgress(0);
-        setUploadComplete(false);
-        navigate('/files');
-      }, 1500);
+      const progressInterval = setInterval(simulateProgress, 200);
+
+      const response = await fetch('http://localhost:8000/getFiles.php', {
+        method: 'POST',
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+
+      if (!response.ok) {
+        throw new Error(`Upload failed: HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        handleUploadSuccess(data);
+      } else if (data.error === 'FILE_EXISTS') {
+        setExistingFileData(data.existingFile);
+        setOpenConfirmDialog(true);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
 
     } catch (err) {
-      setError('Upload failed. Please try again.');
+      console.error('Upload error:', err);
+      setError(err.message);
+    } finally {
       setUploading(false);
     }
+  };
+
+  const handleConfirmReplace = async () => {
+    setOpenConfirmDialog(false);
+    await handleUpload(true);
   };
 
   return (
@@ -144,6 +202,7 @@ const FileUpload = () => {
           id="file-input"
           hidden
           onChange={handleFileSelect}
+          accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.xlsx,.xls,.csv"
         />
         <label htmlFor="file-input">
           <DropZone
@@ -156,6 +215,9 @@ const FileUpload = () => {
             </Typography>
             <Typography variant="body2" color="text.secondary">
               or click to browse from your computer
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+              Maximum file size: 100MB
             </Typography>
           </DropZone>
         </label>
@@ -172,7 +234,7 @@ const FileUpload = () => {
           }}>
             {uploadComplete && <CheckCircleIcon sx={{ color: 'success.main', mr: 1 }} />}
             <Typography color="text.secondary">
-              {file.name}
+              {file.name} ({(file.size / (1024 * 1024)).toFixed(2)}MB)
             </Typography>
             <IconButton
               size="small"
@@ -213,7 +275,7 @@ const FileUpload = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={handleUpload}
+          onClick={() => handleUpload(false)}
           disabled={!file || !urlPath || uploading}
           startIcon={<CloudUpload />}
           sx={{ mt: 3, px: 4, py: 1.5 }}
@@ -221,6 +283,27 @@ const FileUpload = () => {
           {uploading ? 'Uploading...' : 'Upload File'}
         </Button>
       </UploadCard>
+
+      <Dialog
+        open={openConfirmDialog}
+        onClose={() => setOpenConfirmDialog(false)}
+      >
+        <DialogTitle>Replace Existing File?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            A file with the name "{existingFileData?.name}" already exists in this location.
+            Do you want to replace it?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmDialog(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmReplace} color="primary" variant="contained">
+            Replace
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={openSnackbar}

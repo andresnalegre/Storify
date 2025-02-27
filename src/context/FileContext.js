@@ -1,100 +1,149 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { formatFileSize, getFileIcon } from '../utils/fileUtils';
 
 const FileContext = createContext();
 
 export const FileProvider = ({ children }) => {
-  const [files, setFiles] = useState(() => {
-    const savedFiles = localStorage.getItem('storifyFiles');
-    return savedFiles ? JSON.parse(savedFiles) : [];
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const enhanceFileData = (file) => ({
+    ...file,
+    icon: getFileIcon(file.type),
+    formattedSize: formatFileSize(file.size),
   });
 
-  useEffect(() => {
-    localStorage.setItem('storifyFiles', JSON.stringify(files));
-  }, [files]);
-
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const getFileIcon = (fileType) => {
-    if (fileType.includes('image')) return 'image';
-    if (fileType.includes('pdf')) return 'pdf';
-    if (fileType.includes('word')) return 'word';
-    if (fileType.includes('excel')) return 'excel';
-    if (fileType.includes('video')) return 'video';
-    return 'file';
-  };
-
-  const addFile = (newFile) => {
-    const fileData = {
-      id: Date.now(),
-      name: newFile.file.name,
-      path: newFile.urlPath,
-      size: formatFileSize(newFile.file.size),
-      type: newFile.file.type,
-      icon: getFileIcon(newFile.file.type),
-      uploadDate: new Date().toISOString(),
-      lastModified: newFile.file.lastModified,
-      revision: 0,
-      file: newFile.file,
-    };
-
-    setFiles(prevFiles => {
-      const existingFileIndex = prevFiles.findIndex(f => f.path === newFile.urlPath);
+  const fetchFiles = useCallback(async () => {
+    try {
+      const response = await fetch('http://localhost:8000/getFiles.php');
+      const data = await response.json();
       
-      if (existingFileIndex !== -1) {
-        const updatedFiles = [...prevFiles];
-        fileData.revision = prevFiles[existingFileIndex].revision + 1;
-        updatedFiles.unshift(fileData);
-        return updatedFiles;
+      if (data.success) {
+        const uniqueFiles = Array.from(
+          new Map(data.files.map(file => [file.id, enhanceFileData(file)])).values()
+        );
+        
+        setFiles(uniqueFiles);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
+  const addOrReplaceFile = async (fileData, replace = false, existingFileId = null) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', fileData.file);
+      formData.append('path', fileData.urlPath);
+      if (replace) {
+        formData.append('replace', 'true');
+        formData.append('existingFileId', existingFileId);
       }
 
-      return [fileData, ...prevFiles];
-    });
+      const response = await fetch('http://localhost:8000/getFiles.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const newFileData = enhanceFileData(data.file);
+        
+        setFiles(prevFiles => {
+          const uniqueFiles = new Map(prevFiles.map(file => [file.id, file]));
+          uniqueFiles.set(newFileData.id, newFileData);
+          return Array.from(uniqueFiles.values());
+        });
+        
+        return { success: true, file: newFileData };
+      } else if (data.error === 'FILE_EXISTS') {
+        return { 
+          success: false, 
+          error: 'FILE_EXISTS',
+          existingFile: data.existingFile 
+        };
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      console.error('Error uploading file:', err);
+      return { success: false, error: err.message };
+    }
   };
 
-  const deleteFile = (fileId) => {
-    setFiles(prevFiles => prevFiles.filter(file => file.id !== fileId));
-  };
+  const deleteFile = async (fileId) => {
+    try {
+      const response = await fetch('http://localhost:8000/getFiles.php', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: fileId })
+      });
 
-  const getFileRevisions = (filePath) => {
-    return files.filter(file => file.path === filePath)
-      .sort((a, b) => b.revision - a.revision);
+      const data = await response.json();
+
+      if (data.success) {
+        setFiles(prevFiles => prevFiles.filter(file => file.id !== fileId));
+        return { success: true };
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      console.error('Error deleting file:', err);
+      return { success: false, error: err.message };
+    }
   };
 
   const downloadFile = async (file) => {
     try {
-      const blob = new Blob([file.file], { type: file.type });
+      const response = await fetch(`http://localhost:8000/getFiles.php?download=true&id=${file.id}`);
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
       window.URL.revokeObjectURL(url);
-      return true;
-    } catch (error) {
-      console.error('Download error:', error);
-      return false;
+      document.body.removeChild(a);
+      
+      return { success: true };
+    } catch (err) {
+      console.error('Error downloading file:', err);
+      return { success: false, error: err.message };
     }
   };
 
+  const value = {
+    files,
+    setFiles,
+    loading,
+    error,
+    addFile: (fileData) => addOrReplaceFile(fileData),
+    replaceFile: (fileData, existingFileId) => addOrReplaceFile(fileData, true, existingFileId),
+    deleteFile,
+    downloadFile,
+    refreshFiles: fetchFiles
+  };
+
   return (
-    <FileContext.Provider 
-      value={{ 
-        files, 
-        addFile, 
-        deleteFile, 
-        getFileRevisions,
-        downloadFile,
-        formatFileSize 
-      }}
-    >
+    <FileContext.Provider value={value}>
       {children}
     </FileContext.Provider>
   );
@@ -107,3 +156,5 @@ export const useFiles = () => {
   }
   return context;
 };
+
+export default FileContext;
