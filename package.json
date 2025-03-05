@@ -15,13 +15,13 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-react\" \"npm run start-php\"",
+    "start": "npm run initdb && concurrently \"npm run start-react\" \"npm run start-php\"",
     "start-react": "react-scripts start",
     "start-php": "php -S localhost:8000 -t api",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && cp -r build/* /Applications/MAMP/htdocs/Storify/"
+    "initdb": "php api/initdb.php",
+    "postinstall": "npm run initdb"
   },
   "eslintConfig": {
     "extends": [
@@ -42,6 +42,6 @@
     ]
   },
   "devDependencies": {
-    "concurrently": "^7.0.0"
+    "concurrently": "^7.6.0"
   }
 }
