@@ -1,0 +1,389 @@
+@font-face {
+    font-family: 'Poppins';
+    src: url('../assets/fonts/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Dashboard */
+
+.dashboard-hero-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #f8f9fe 0%, #ffffff 100%);
+}
+
+.dashboard-hero-content {
+    max-width: 768px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.dashboard-hero-title {
+    font-size: 2rem;
+    color: #6C63FF;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-hero-subtitle {
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-upload-link {
+    text-decoration: none;
+}
+
+.dashboard-upload-button {
+    margin-top: 16px;
+    background-color: #6C63FF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-upload-button svg {
+    font-size: 1.5rem;
+}
+
+.dashboard-upload-button:hover {
+    background-color: #4B45B3;
+}
+
+.dashboard-file-list {
+    margin-top: 2rem;
+}
+
+.dashboard-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-file-item button {
+    background-color: #FF6584;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.dashboard-file-item button:hover {
+    background-color: #B34659;
+}
+
+/* Navbar */
+
+.styled-appbar {
+    background-color: white;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+  
+.logo-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #3f51b5;
+}
+  
+.logo-container:hover {
+    text-decoration: none;
+}
+  
+.logo {
+    width: 150px;
+    height: auto;
+    margin-right: 8px;
+}
+  
+.nav-button {
+    margin-left: 16px;
+    border-radius: 4px;
+    padding: 8px 24px;
+    color: #3f51b5;
+}
+  
+.nav-button.active {
+    background-color: #3f51b5;
+    color: white;
+}
+  
+.nav-button.active:hover {
+    background-color: #303f9f;
+}
+
+/* FileManager */
+
+.file-manager-loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.file-manager-snackbar-anchor {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.file-manager-container {
+    margin-top: 100px !important;
+    margin-bottom: 80px !important;
+    padding: 24px !important;
+}
+
+.file-manager-header-box {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 24px !important;
+}
+
+.file-manager-styled-card {
+    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.1) !important;
+}
+
+.file-manager-list-header {
+    padding: 24px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+    background-color: rgba(108, 99, 255, 0.02) !important;
+}
+
+.file-manager-list-header-content {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.file-manager-search-controls {
+    display: flex !important;
+    gap: 16px !important;
+}
+
+.file-manager-search-bar {
+    margin-bottom: 16px !important;
+}
+
+.file-manager-file-list {
+    padding: 16px !important;
+}
+
+.file-manager-list-item {
+    border-radius: 4px !important;
+    margin-bottom: 8px !important;
+}
+
+.file-manager-list-item:hover {
+    background-color: rgba(108, 99, 255, 0.05) !important;
+}
+
+.file-manager-empty-state {
+    text-align: center !important;
+    padding: 48px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+}
+
+.file-manager-empty-state-icon {
+    font-size: 48px !important;
+    color: rgba(0, 0, 0, 0.54) !important;
+    opacity: 0.5 !important;
+}
+
+.file-manager-menu-icon {
+    margin-right: 8px !important;
+}
+
+.file-manager-alert {
+    width: 100% !important;
+}
+
+.file-manager-no-decoration {
+    text-decoration: none !important;
+}
+
+.file-manager-upload-button {
+    margin-top: 16px !important;
+    background-color: #6C63FF;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 3rem;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.file-manager-upload-button:hover {
+    background-color: #4B45B3;
+}
+
+/* FileUpload */
+
+.file-upload-container {
+    margin-top: 110px !important;
+    margin-bottom: 60px !important;
+    padding: 20px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: calc(100vh - 200px) !important;
+}
+  
+.upload-card {
+    max-width: 1200px !important;
+    width: 100% !important;
+    padding: 20px 40px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.1) !important;
+    background-color: #fff !important;
+    text-align: center !important;
+}
+  
+.file-upload-dropzone {
+    border: 2px dashed #6c63ff !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    background-color: rgba(108, 99, 255, 0.02) !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease, border-color 0.3s ease !important;
+    margin-top: 16px !important;
+}
+  
+.file-upload-info-box {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-top: 12px !important;
+    padding: 12px !important;
+    background-color: rgba(108, 99, 255, 0.05) !important;
+    border-radius: 8px !important;
+}
+  
+.file-upload-textfield-margin {
+    margin-top: 16px !important;
+    margin-bottom: 12px !important;
+}
+  
+.file-upload-linear-progress {
+    margin-top: 16px !important;
+    border-radius: 4px !important;
+}
+  
+.file-upload-error-text {
+    margin-top: 12px !important;
+    color: red !important;
+}
+  
+.file-upload-button {
+    margin-top: 16px !important;
+    padding: 10px 20px !important;
+    background-color: #6c63ff !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+}
+  
+.file-upload-button:disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+}
+  
+.file-upload-button:hover:not(:disabled) {
+    background-color: #5a54d6 !important;
+}
+  
+.file-upload-snackbar-width {
+    width: 100% !important;
+}
+
+/* About */
+
+body {
+    background-color: #f5f5f5;
+}
+  
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+  
+.paper {
+    padding: 3rem;
+    background-color: #fff;
+}
+  
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+  
+.infoIcon {
+    margin-right: 0.5rem;
+    color: #6C63FF;
+}
+  
+.typography {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Footer */
+
+.footer-container {
+    background-color: #fff;
+    padding: 16px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+}
+  
+.footer-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+  
+.footer-text {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.6);
+}

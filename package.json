@@ -1,47 +1,13 @@
 {
   "name": "storify",
-  "version": "0.1.0",
-  "private": true,
-  "homepage": "/Storify",
-  "dependencies": {
-    "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.6",
-    "@mui/material": "^5.15.6",
-    "axios": "^1.6.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.3",
-    "react-scripts": "5.0.1"
-  },
+  "version": "1.0.0",
   "scripts": {
-    "start": "npm run initdb && concurrently \"npm run start-react\" \"npm run start-php\"",
-    "start-react": "react-scripts start",
-    "start-php": "php -S localhost:8000 -t api",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "initdb": "php api/initdb.php",
-    "postinstall": "npm run initdb"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+      "prestart": "php backend/initdb.php",
+      "start": "concurrently \"php -S localhost:8000 -t backend\" \"cd frontend && npm start\"",
+      "build": "cd frontend && npm run build",
+      "test": "cd frontend && npm test"
   },
   "devDependencies": {
-    "concurrently": "^7.6.0"
+      "concurrently": "^9.1.2"
   }
 }
