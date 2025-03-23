@@ -19,47 +19,68 @@
 
 ---
 
-## How to use the app
+## Step 1: Clone the Repository
 
-1. **Clone the Project**:
-   - Open your terminal, go to the folder where you want to save the project, and run:
+   - Open your terminal and clone the Storify repository:
 
      ```bash
      git clone https://github.com/andresnalegre/Storify
      ```
      
-2. **Go to the Project Folder**:
-   - Change to the project folder:
+
+## Step 2: Setting Up the Database
+
+   **Validate the username and password**:
+   - Open your terminal, navigate to the backend folder:
+
+     ```bash
+     Storify/backend/database.php
+     ```
+
+   - By default, the credentials are:
+
+     ```bash
+     $username = "root";
+     $password = "admin";
+     ```
+     
+   **If you already have a password set, update it in database.php**
+
+
+## Step 3:  How to use the app
+
+   - Navigate to the Storify Folder:
 
      ```bash
      cd Storify
      ```
      
-3. **Run the Project**:
-   - Run the project with:
+   - Run the project:
 
      ```bash
      npm start
      ```
+     
+   **The packege.json is already configured to set up the database and run the React project automatically. Just make sure all dependencies are installed.**
 
-## How to Access MariaDB
+## Step 4: Validating your data into storify at MariaDB
+1. **Access MariaDB**: 
 
-1. **Open Another Terminal**:
-   - Inside the project folder, run:
+   - Open a new terminal and run:
 
      ```bash
      mysql -u root -p
      ```
-
-1. **Log in to MariaDB**:  
-   - Enter the password:
+ 
+   - Enter the Database password:
 
      ```text
      admin
      ```
      
 2. **Select the Storify Database**:  
-
+   - Select storify Database:
+     
      ```sql
      USE storify;
      ```
@@ -82,7 +103,7 @@
      ```sql
      SELECT type, COUNT(*) AS count FROM files GROUP BY type;
      ```
-     
+          
 ---
 
 ## License
