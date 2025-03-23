@@ -12,7 +12,7 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Menu as MenuIcon} from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../styles/styles.css';
