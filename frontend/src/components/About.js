@@ -1,21 +1,20 @@
 import React from 'react';
-import { Container, Typography, Paper, Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Info, Code, Update } from '@mui/icons-material';
+import { Container, Typography, Paper, Box, List, ListItem, ListItemIcon, ListItemText, Link } from '@mui/material';
+import { Code, Update, GitHub } from '@mui/icons-material';
 import '../styles/styles.css';
 
 const About = () => {
   return (
-    <Box className="container">
-      <Container maxWidth="md">
-        <Paper elevation={3} className="paper">
-          <Box className="header">
-            <Info className="infoIcon" />
+    <Box className="aboutContainer">
+      <Container maxWidth="sm" className="aboutContentContainer">
+        <Paper elevation={3} className="aboutPaper">
+          <Box className="aboutTitleBox">
             <Typography variant="h4" component="h1" color="primary">
               About Storify
             </Typography>
           </Box>
 
-          <Typography variant="body1" paragraph className="typography">
+          <Typography variant="body1" paragraph className="aboutSubtitle">
             Storify is a platform that allows you to upload, download, and access your files easily.
           </Typography>
 
@@ -25,8 +24,8 @@ const About = () => {
                 <Code color="primary" />
               </ListItemIcon>
               <ListItemText 
-                primary="IT Switch Career Final Project" 
-                secondary="This project showcases the skills and knowledge using React for the frontend, PHP for the backend, and MariaDB as the database."
+                primary="IT Career Switch Project" 
+                secondary="Final Project"
               />
             </ListItem>
 
@@ -37,6 +36,22 @@ const About = () => {
               <ListItemText 
                 primary="Version" 
                 secondary="1.0.0"
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <GitHub color="primary" />
+              </ListItemIcon>
+              <ListItemText 
+                primary={
+                  <span>
+                    Developed by{' '}
+                    <Link href="https://github.com/andresnalegre" target="_blank" rel="noopener noreferrer" color="primary">
+                      Andres Nicolas
+                    </Link>
+                  </span>
+                }
               />
             </ListItem>
           </List>

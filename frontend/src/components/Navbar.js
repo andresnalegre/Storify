@@ -12,7 +12,7 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import { Menu as MenuIcon, Info as InfoIcon } from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../styles/styles.css';
@@ -138,7 +138,6 @@ const Navbar = () => {
                 variant={isActive('/about') ? "contained" : "text"}
                 color="primary"
                 isActive={isActive('/about')}
-                startIcon={<InfoIcon />}
               >
                 About
               </NavButton>
