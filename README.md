@@ -39,7 +39,6 @@
    - Run the project with:
 
      ```bash
-     npm install
      npm start
      ```
 
