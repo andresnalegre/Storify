@@ -7,8 +7,6 @@
 
 ## Features
 
-- Bootstrap
-- Friendly UI
 - Data Storage
 
 ---
