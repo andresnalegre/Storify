@@ -2,12 +2,14 @@
   "name": "storify",
   "version": "1.0.0",
   "scripts": {
-      "prestart": "php backend/initdb.php",
-      "start": "concurrently \"php -S localhost:8000 -t backend\" \"cd frontend && npm start\"",
-      "build": "cd frontend && npm run build",
-      "test": "cd frontend && npm test"
+    "setup": "npm install && cd frontend && npm install",
+    "prestart": "php backend/initdb.php",
+    "start": "npm run setup && concurrently \"php -S localhost:8000 -t backend\" \"cd frontend && npm start\"",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test",
+    "clean": "rm -rf node_modules frontend/node_modules package-lock.json frontend/package-lock.json"
   },
   "devDependencies": {
-      "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2"
   }
 }
