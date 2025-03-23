@@ -94,7 +94,7 @@ try {
             $filePath = __DIR__ . '/uploads/' . $file['file_path'];
             if (file_exists($filePath)) {
                 if (!unlink($filePath)) {
-                    throw new Exception('Failed to delete physical file');
+                    throw new Exception('Failed to delete file from uploads');
                 }
             }
 

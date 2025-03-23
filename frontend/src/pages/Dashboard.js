@@ -38,9 +38,8 @@ const Dashboard = () => {
         {files.length > 0 && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             {files.map(file => (
-              <Box key={file.id} sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: theme.spacing(1) }}>
+              <Box key={file.id} sx={{ display: 'flex', justifyContent: 'center', marginBottom: theme.spacing(1) }}>
                 <span>{file.name}</span>
-                <Button variant="outlined" color="secondary">Delete</Button>
               </Box>
             ))}
           </Box>

@@ -54,7 +54,7 @@ class Database {
             return [
                 'success' => false,
                 'error' => 'FILE_EXISTS',
-                'message' => 'File already exists. Do you want to replace it?',
+                'message' => 'The file already exists. Would you like to replace it?',
                 'existingFile' => [
                     'id' => $existingFile['id'],
                     'name' => $name,
@@ -89,7 +89,7 @@ class Database {
         return [
             'success' => true,
             'id' => $fileId,
-            'message' => $existingFile ? 'File replaced successfully' : 'File uploaded successfully',
+            'message' => $existingFile ? 'The file was successfully replaced!' : 'The file was uploaded successfully!',
             'file' => [
                 'id' => $fileId,
                 'name' => $name,
@@ -108,7 +108,7 @@ class Database {
         }
 
         if ($file['size'] > self::MAX_FILE_SIZE) {
-            throw new Exception('File size exceeds maximum limit of 100MB');
+            throw new Exception('The file size exceeds the maximum limit of 100MB. Please choose a smaller file.');
         }
 
         if (!in_array($file['type'], self::ALLOWED_TYPES)) {
@@ -119,7 +119,7 @@ class Database {
     private function createUploadDirectory() {
         if (!file_exists(self::UPLOAD_DIR)) {
             if (!mkdir(self::UPLOAD_DIR, 0777, true)) {
-                throw new Exception('Failed to create upload directory');
+                throw new Exception('Unable to create the upload directory. Please check permissions and try again.');
             }
         }
     }

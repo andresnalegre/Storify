@@ -1,5 +1,5 @@
 {
-  "name": "storify",
+  "name": "storify-root",
   "version": "1.0.0",
   "scripts": {
     "setup": "npm install && cd frontend && npm install",

@@ -336,10 +336,10 @@ const FileManager = () => {
           <div className="file-manager-empty-state">
             <InsertDriveFile className="file-manager-empty-state-icon" />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchTerm ? 'No files found' : 'No files uploaded yet'}
+              {searchTerm ? 'No files found' : "You haven't uploaded any files yet."}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm ? 'Try different search terms' : 'Start by uploading your first file'}
+              {searchTerm ? 'Try different search terms' : 'Start uploading your first file!'}
             </Typography>
             {!searchTerm && (
               <Link to="/upload" className="file-manager-no-decoration">
@@ -377,7 +377,7 @@ const FileManager = () => {
         <DialogTitle>Delete File</DialogTitle>
         <DialogContent>
           Are you sure you want to delete "{selectedFile?.name}"?
-          This action cannot be undone.
+          This action is irreversible.
         </DialogContent>
         <DialogActions>
           <Button 

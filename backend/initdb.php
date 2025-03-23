@@ -34,7 +34,7 @@ try {
             throw new Exception("Error creating table: " . $conn->error);
         }
 
-        echo "Database and table initialized successfully.\n";
+        echo "The database and table have been set up successfully!\n";
     } else {
         $expectedColumns = ['id', 'name', 'path', 'size', 'type', 'file_path', 'upload_date'];
         $result = $conn->query("DESCRIBE files");
@@ -52,9 +52,9 @@ try {
                     throw new Exception("Error adding column $column: " . $conn->error);
                 }
             }
-            echo "Missing columns added to the 'files' table.\n";
+            echo "The missing columns have been successfully added to the 'files' table.\n";
         } else {
-            echo "Database is OK.\n";
+            echo "Database is OK!\n";
         }
     }
 

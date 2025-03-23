@@ -26,7 +26,7 @@ const ALLOWED_TYPES = [
 
 function validateFile($file) {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('Invalid file upload');
+        throw new Exception('There was an issue with the file upload.');
     }
 
     if ($file['size'] > MAX_FILE_SIZE) {
@@ -34,7 +34,7 @@ function validateFile($file) {
     }
 
     if (!in_array($file['type'], ALLOWED_TYPES)) {
-        throw new Exception('File type not allowed');
+        throw new Exception('The file type is not allowed.');
     }
 
     return true;
@@ -43,7 +43,7 @@ function validateFile($file) {
 function createUploadDirectory() {
     if (!file_exists(UPLOAD_DIR)) {
         if (!mkdir(UPLOAD_DIR, 0777, true)) {
-            throw new Exception('Failed to create upload directory');
+            throw new Exception('Failed to create uploads directory');
         }
     }
 }
@@ -133,7 +133,7 @@ try {
                 echo json_encode([
                     'success' => true,
                     'id' => $fileId,
-                    'message' => $existingFile ? 'File replaced successfully' : 'File uploaded successfully',
+                    'message' => $existingFile ? 'The file was successfully replaced!' : 'The file was uploaded successfully!',
                     'file' => [
                         'id' => $fileId,
                         'name' => $name,

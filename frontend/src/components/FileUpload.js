@@ -83,7 +83,7 @@ const FileUpload = () => {
 
     const maxSize = 100 * 1024 * 1024;
     if (file.size > maxSize) {
-      setError('File size exceeds 100MB limit');
+      setError('The file is too large. Please select a file smaller than 100MB.');
       return;
     }
 
@@ -99,15 +99,15 @@ const FileUpload = () => {
 
   const validateForm = () => {
     if (!file) {
-      setError('Please select a file');
+      setError('Please choose a file to upload.');
       return false;
     }
     if (!urlPath) {
-      setError('Please enter a URL path');
+      setError('Please provide a URL path for the file.');
       return false;
     }
     if (!urlPath.startsWith('/')) {
-      setError('URL path must start with /');
+      setError('The URL path should start with a "/" character.');
       return false;
     }
     return true;
@@ -116,7 +116,7 @@ const FileUpload = () => {
   const handleUploadSuccess = (data) => {
     setProgress(100);
     setUploadComplete(true);
-    notificationsRef.current.showSnackbar('File uploaded successfully!', 'success');
+    notificationsRef.current.showSnackbar('Your file has been uploaded successfully!', 'success');
 
     addFile(data.file);
 
