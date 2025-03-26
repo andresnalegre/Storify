@@ -28,9 +28,9 @@
      ```
      
 
-## Step 2: How to use the SafePass app
+## Step 2: How to use the Storify app
 
-   - Navigate to the SafePass Folder:
+   - Navigate to the Storify Folder:
 
      ```bash
      cd Storify
