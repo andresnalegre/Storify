@@ -1,5 +1,5 @@
 
-# Storify
+# About Storify
 
 **Storify** is a React project where I developed with React and PHP. The goal of this project is to create a simple file storage solution that works with MariaDB and makes it easy to store and download them.
 
