@@ -1,13 +1,13 @@
 
 # Storify
 
-**Storify** is a React project where I showcase my skills with React and PHP. The goal of this project is to create a simple data storage solution that works with MariaDB and can be easily adapted for enterprise environments.
+**Storify** is a React project where I developed with React and PHP. The goal of this project is to create a simple file storage solution that works with MariaDB and makes it easy to store and download them.
 
 ---
 
 ## Features
 
-- Data Storage
+- File Storage
 
 ---
 
@@ -28,28 +28,9 @@
      ```
      
 
-## Step 2: Setting Up the Database
+## Step 2: How to use the SafePass app
 
-   **Validate the username and password**:
-   - Open your terminal, navigate to the backend folder:
-
-     ```bash
-     Storify/backend/database.php
-     ```
-
-   - By default, the credentials are:
-
-     ```bash
-     $username = "root";
-     $password = "admin";
-     ```
-     
-   **If you already have a password set, update it in database.php**
-
-
-## Step 3:  How to use the app
-
-   - Navigate to the Storify Folder:
+   - Navigate to the SafePass Folder:
 
      ```bash
      cd Storify
@@ -63,21 +44,23 @@
      
    **The packege.json is already configured to set up the database and run the React project automatically. Just make sure all dependencies are installed.**
 
-## Step 4: Validating your data into storify at MariaDB
-1. **Access MariaDB**: 
 
+## Step 3:  Validating your data into storify at XAMPP
+1. **Access MariaDB**:
    - Open a new terminal and run:
 
      ```bash
-     mysql -u root -p
-     ```
- 
-   - Enter the Database password:
-
-     ```text
-     admin
+     /Applications/XAMPP/xamppfiles/bin/mysql -u root -p --socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock;
      ```
      
+   - Alternatively, you can access phpMyAdmin:
+
+     ```bash
+     http://localhost/phpmyadmin
+     ```
+     
+   **Make sure that XAMPP is running properly.**
+
 2. **Select the Storify Database**:  
    - Select storify Database:
      
