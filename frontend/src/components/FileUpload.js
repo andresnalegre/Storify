@@ -53,7 +53,7 @@ const FileUpload = () => {
   const { addFile } = useFiles();
   
   const [file, setFile] = useState(null);
-  const [urlPath, setUrlPath] = useState('');
+  const [urlPath, setUrlPath] = useState('/');
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [uploadComplete, setUploadComplete] = useState(false);
@@ -83,7 +83,7 @@ const FileUpload = () => {
 
     const maxSize = 100 * 1024 * 1024;
     if (file.size > maxSize) {
-      setError('The file is too large. Please select a file smaller than 100MB.');
+      setError('The file is too large. Please try a smaller file.');
       return;
     }
 
@@ -122,7 +122,7 @@ const FileUpload = () => {
 
     setTimeout(() => {
       setFile(null);
-      setUrlPath('');
+      setUrlPath('/');
       setProgress(0);
       setUploadComplete(false);
       navigate('/files');

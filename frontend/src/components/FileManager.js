@@ -83,7 +83,9 @@ const FileManager = () => {
       }
     } catch (error) {
       console.error('Error fetching files:', error);
-      notificationsRef.current.showSnackbar('Error loading files: ' + error.message, 'error');
+      if (notificationsRef.current) {
+        notificationsRef.current.showSnackbar('Error loading files. Please try again.', 'error');
+      }
     } finally {
       setLoading(false);
     }
@@ -175,13 +177,17 @@ const FileManager = () => {
       if (data.success) {
         setFiles(prevFiles => prevFiles.filter(file => file.id !== selectedFile.id));
         setOpenDeleteDialog(false);
-        notificationsRef.current.showSnackbar('File deleted successfully', 'success');
+        if (notificationsRef.current) {
+          notificationsRef.current.showSnackbar('File deleted successfully.', 'success');
+        }
       } else {
         throw new Error(data.error || 'Failed to delete file');
       }
     } catch (error) {
       console.error('Delete error:', error);
-      notificationsRef.current.showSnackbar('Error deleting file: ' + error.message, 'error');
+      if (notificationsRef.current) {
+        notificationsRef.current.showSnackbar('Error deleting file. Please try again.', 'error');
+      }
     }
   };
 
@@ -208,10 +214,14 @@ const FileManager = () => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
       
-      notificationsRef.current.showSnackbar('Download started successfully', 'success');
+      if (notificationsRef.current) {
+        notificationsRef.current.showSnackbar('Download started successfully.', 'success');
+      }
     } catch (error) {
       console.error('Download error:', error);
-      notificationsRef.current.showSnackbar('Error downloading file: ' + error.message, 'error');
+      if (notificationsRef.current) {
+        notificationsRef.current.showSnackbar('Error downloading file. Please try again.', 'error');
+      }
     }
     handleMenuClose();
   };
@@ -336,10 +346,10 @@ const FileManager = () => {
           <div className="file-manager-empty-state">
             <InsertDriveFile className="file-manager-empty-state-icon" />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchTerm ? 'No files found' : "You haven't uploaded any files yet."}
+              {searchTerm ? 'No files found.' : "You haven't uploaded any files yet."}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm ? 'Try different search terms' : 'Start uploading your first file!'}
+              {searchTerm ? 'Try different search terms.' : 'Start uploading your first file!'}
             </Typography>
             {!searchTerm && (
               <Link to="/upload" className="file-manager-no-decoration">
@@ -376,8 +386,7 @@ const FileManager = () => {
       >
         <DialogTitle>Delete File</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete "{selectedFile?.name}"?
-          This action is irreversible.
+          Are you sure you want to delete "{selectedFile?.name}"? This action is irreversible.
         </DialogContent>
         <DialogActions>
           <Button 

@@ -12,7 +12,6 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
-const UPLOAD_DIR = __DIR__ . '/uploads/';
 const ALLOWED_TYPES = [
     'image/jpeg',
     'image/png',
@@ -26,30 +25,22 @@ const ALLOWED_TYPES = [
 
 function validateFile($file) {
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('There was an issue with the file upload.');
+        throw new Exception('Something went wrong with the file upload.');
     }
 
     if ($file['size'] > MAX_FILE_SIZE) {
-        throw new Exception('File size exceeds maximum limit of 100MB');
+        throw new Exception('File size is over the 100MB limit.');
     }
 
     if (!in_array($file['type'], ALLOWED_TYPES)) {
-        throw new Exception('The file type is not allowed.');
+        throw new Exception('File type is not allowed.');
     }
 
     return true;
 }
 
-function createUploadDirectory() {
-    if (!file_exists(UPLOAD_DIR)) {
-        if (!mkdir(UPLOAD_DIR, 0777, true)) {
-            throw new Exception('Failed to create uploads directory');
-        }
-    }
-}
-
 try {
-    $conn = new mysqli("localhost", "root", "admin", "storify");
+    $conn = new mysqli("localhost", "root", "", "storify", 3306, "/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock");
     $conn->set_charset("utf8mb4");
 
     if ($conn->connect_error) {
@@ -64,7 +55,7 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             if (!isset($_FILES['file'])) {
-                throw new Exception('No file uploaded');
+                throw new Exception('No file uploaded.');
             }
 
             $file = $_FILES['file'];
@@ -96,26 +87,12 @@ try {
                 exit;
             }
 
-            createUploadDirectory();
-
             $fileName = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $name);
-            $filePath = UPLOAD_DIR . $fileName;
 
             $conn->begin_transaction();
 
             try {
-                if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-                    throw new Exception('Failed to move uploaded file');
-                }
-
-                chmod($filePath, 0644);
-
                 if ($existingFile) {
-                    $oldFilePath = UPLOAD_DIR . $existingFile['file_path'];
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-
                     $stmt = $conn->prepare("UPDATE files SET size = ?, type = ?, file_path = ? WHERE id = ?");
                     $stmt->bind_param("issi", $size, $type, $fileName, $existingFile['id']);
                 } else {
@@ -133,7 +110,7 @@ try {
                 echo json_encode([
                     'success' => true,
                     'id' => $fileId,
-                    'message' => $existingFile ? 'The file was successfully replaced!' : 'The file was uploaded successfully!',
+                    'message' => $existingFile ? 'File replaced successfully!' : 'File uploaded successfully!',
                     'file' => [
                         'id' => $fileId,
                         'name' => $name,
@@ -147,9 +124,6 @@ try {
 
             } catch (Exception $e) {
                 $conn->rollback();
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
                 throw $e;
             }
         } catch (Exception $e) {

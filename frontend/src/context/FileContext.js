@@ -42,10 +42,11 @@ export const FileProvider = ({ children }) => {
         
         setFiles(uniqueFiles);
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || 'Failed to load files');
       }
     } catch (err) {
-      setError(err.message);
+      console.error('Error fetching files:', err);
+      setError('Failed to load files. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -89,11 +90,11 @@ export const FileProvider = ({ children }) => {
           existingFile: data.existingFile 
         };
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || 'Failed to upload file');
       }
     } catch (err) {
       console.error('Error uploading file:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: 'Failed to upload file. Please try again.' };
     }
   };
 
@@ -113,11 +114,11 @@ export const FileProvider = ({ children }) => {
         setFiles(prevFiles => prevFiles.filter(file => file.id !== fileId));
         return { success: true };
       } else {
-        throw new Error(data.error);
+        throw new Error(data.error || 'Failed to delete file');
       }
     } catch (err) {
       console.error('Error deleting file:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: 'Failed to delete file. Please try again.' };
     }
   };
 
@@ -142,7 +143,7 @@ export const FileProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       console.error('Error downloading file:', err);
-      return { success: false, error: err.message };
+      return { success: false, error: 'Failed to download file. Please try again.' };
     }
   };
 
