@@ -1,6 +1,22 @@
 import React from 'react';
-import { Container, Typography, Paper, Box, List, ListItem, ListItemIcon, ListItemText, Link } from '@mui/material';
-import { Code, Update, GitHub } from '@mui/icons-material';
+import {
+  Container,
+  Typography,
+  Paper,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Link,
+} from '@mui/material';
+import {
+  Code,
+  Update,
+  GitHub,
+  Storage,
+  Language,
+} from '@mui/icons-material';
 import '../styles/styles.css';
 
 const About = () => {
@@ -15,7 +31,8 @@ const About = () => {
           </Box>
 
           <Typography variant="body1" paragraph className="aboutSubtitle">
-            Storify is a platform that allows you to upload, download, and access your files easily.
+            Storify is a file manager demo focused on UI/UX, allowing users to
+            upload, organize, download and delete files directly in the browser.
           </Typography>
 
           <List>
@@ -23,9 +40,29 @@ const About = () => {
               <ListItemIcon>
                 <Code color="primary" />
               </ListItemIcon>
-              <ListItemText 
-                primary="IT Career Switch Project" 
-                secondary="Final Project"
+              <ListItemText
+                primary="Stack"
+                secondary="React + Material UI + React Router"
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <Storage color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Storage"
+                secondary="localStorage (demo mode, no backend)"
+              />
+            </ListItem>
+
+            <ListItem>
+              <ListItemIcon>
+                <Language color="primary" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Deploy"
+                secondary="Hosted as a static site"
               />
             </ListItem>
 
@@ -33,21 +70,23 @@ const About = () => {
               <ListItemIcon>
                 <Update color="primary" />
               </ListItemIcon>
-              <ListItemText 
-                primary="Version" 
-                secondary="1.0.0"
-              />
+              <ListItemText primary="Version" secondary="2.0.0-demo" />
             </ListItem>
 
             <ListItem>
               <ListItemIcon>
                 <GitHub color="primary" />
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={
                   <span>
                     Developed by{' '}
-                    <Link href="https://github.com/andresnalegre" target="_blank" rel="noopener noreferrer" color="primary">
+                    <Link
+                      href="https://github.com/andresnalegre"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      color="primary"
+                    >
                       Andres Nicolas
                     </Link>
                   </span>

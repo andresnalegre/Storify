@@ -30,23 +30,24 @@ try {
 
         while ($row = $result->fetch_assoc()) {
             $files[] = [
-                'id' => $row['id'],
-                'name' => $row['name'],
-                'path' => $row['path'],
-                'size' => (int)$row['size'],
-                'type' => $row['type'],
+                'id'         => $row['id'],
+                'name'       => $row['name'],
+                'path'       => $row['path'],
+                'size'       => (int)$row['size'],
+                'type'       => $row['type'],
                 'uploadDate' => $row['upload_date'],
-                'filePath' => $row['file_path']
+                'filePath'   => $row['file_path']
             ];
         }
 
         echo json_encode([
             'success' => true,
-            'files' => $files
+            'files'   => $files
         ]);
+
     } else if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $data = json_decode(file_get_contents('php://input'), true);
-        
+
         if (!isset($data['id'])) {
             throw new Exception('File ID not provided.');
         }
@@ -66,7 +67,7 @@ try {
 
             echo json_encode([
                 'success' => true,
-                'message' => 'File deleted successfully!'
+                'message' => 'File deleted successfully.'
             ]);
 
         } catch (Exception $e) {
@@ -77,11 +78,11 @@ try {
 
 } catch (Exception $e) {
     error_log("Error: " . $e->getMessage());
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error'   => $e->getMessage()
     ]);
 }
 

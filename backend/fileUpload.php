@@ -61,25 +61,25 @@ try {
             $file = $_FILES['file'];
             validateFile($file);
 
-            $name = $conn->real_escape_string($file['name']);
-            $path = $conn->real_escape_string($_POST['path'] ?? '/');
-            $size = $file['size'];
-            $type = $conn->real_escape_string($file['type']);
+            $name    = $conn->real_escape_string($file['name']);
+            $path    = $conn->real_escape_string($_POST['path'] ?? '/');
+            $size    = $file['size'];
+            $type    = $conn->real_escape_string($file['type']);
             $replace = isset($_POST['replace']) ? filter_var($_POST['replace'], FILTER_VALIDATE_BOOLEAN) : false;
 
             $stmt = $conn->prepare("SELECT id, file_path FROM files WHERE name = ? AND path = ? FOR UPDATE");
             $stmt->bind_param("ss", $name, $path);
             $stmt->execute();
-            $result = $stmt->get_result();
+            $result       = $stmt->get_result();
             $existingFile = $result->fetch_assoc();
 
             if ($existingFile && !$replace) {
                 echo json_encode([
-                    'success' => false,
-                    'error' => 'FILE_EXISTS',
-                    'message' => 'File already exists. Do you want to replace it?',
+                    'success'      => false,
+                    'error'        => 'FILE_EXISTS',
+                    'message'      => 'File already exists. Do you want to replace it?',
                     'existingFile' => [
-                        'id' => $existingFile['id'],
+                        'id'   => $existingFile['id'],
                         'name' => $name,
                         'path' => $path
                     ]
@@ -109,15 +109,15 @@ try {
 
                 echo json_encode([
                     'success' => true,
-                    'id' => $fileId,
-                    'message' => $existingFile ? 'File replaced successfully!' : 'File uploaded successfully!',
-                    'file' => [
-                        'id' => $fileId,
-                        'name' => $name,
-                        'path' => $path,
-                        'size' => $size,
-                        'type' => $type,
-                        'filePath' => $fileName,
+                    'id'      => $fileId,
+                    'message' => $existingFile ? 'File replaced successfully.' : 'File uploaded successfully.',
+                    'file'    => [
+                        'id'         => $fileId,
+                        'name'       => $name,
+                        'path'       => $path,
+                        'size'       => $size,
+                        'type'       => $type,
+                        'filePath'   => $fileName,
                         'uploadDate' => date('Y-m-d H:i:s')
                     ]
                 ]);
@@ -126,22 +126,23 @@ try {
                 $conn->rollback();
                 throw $e;
             }
+
         } catch (Exception $e) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ]);
         }
     }
 
 } catch (Exception $e) {
     error_log("Error: " . $e->getMessage());
-    
+
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error'   => $e->getMessage()
     ]);
 }
 

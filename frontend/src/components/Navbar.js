@@ -12,7 +12,7 @@ import {
   Menu,
   MenuItem,
 } from '@mui/material';
-import { Menu as MenuIcon} from '@mui/icons-material';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import '../styles/styles.css';
@@ -70,6 +70,7 @@ const Navbar = () => {
   const navigationItems = [
     { path: '/upload', label: 'Upload File' },
     { path: '/files', label: 'My Files' },
+    { path: '/about', label: 'About' },
   ];
 
   return (
@@ -81,6 +82,7 @@ const Navbar = () => {
           </LogoContainer>
 
           <Box sx={{ flexGrow: 1 }} />
+
           {isMobile ? (
             <>
               <IconButton
@@ -92,6 +94,7 @@ const Navbar = () => {
               >
                 <MenuIcon />
               </IconButton>
+
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -125,22 +128,13 @@ const Navbar = () => {
                   key={item.path}
                   component={Link}
                   to={item.path}
-                  variant={isActive(item.path) ? "contained" : "text"}
+                  variant={isActive(item.path) ? 'contained' : 'text'}
                   color="primary"
                   isActive={isActive(item.path)}
                 >
                   {item.label}
                 </NavButton>
               ))}
-              <NavButton
-                component={Link}
-                to="/about"
-                variant={isActive('/about') ? "contained" : "text"}
-                color="primary"
-                isActive={isActive('/about')}
-              >
-                About
-              </NavButton>
             </Box>
           )}
         </Toolbar>

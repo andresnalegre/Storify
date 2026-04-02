@@ -8,6 +8,7 @@ import App from './App';
 import './styles/styles.css';
 
 const root = createRoot(document.getElementById('root'));
+
 root.render(
   <BrowserRouter basename="/Storify">
     <ThemeProvider theme={theme}>

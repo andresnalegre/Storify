@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import {
   Container,
   Card,
@@ -20,6 +20,7 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   InsertDriveFile,
@@ -34,6 +35,7 @@ import {
   MoreVert as MoreVertIcon,
   Search as SearchIcon,
   Sort as SortIcon,
+  DeleteSweep as DeleteSweepIcon,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useFiles } from '../context/FileContext';
@@ -41,59 +43,16 @@ import Notifications from './Notifications';
 import '../styles/styles.css';
 
 const FileManager = () => {
-  const { files, setFiles } = useFiles();
+  const { files, loading, deleteFile, downloadFile, clearAllFiles } = useFiles();
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [openClearAllDialog, setOpenClearAllDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
-  const [loading, setLoading] = useState(true);
 
   const notificationsRef = useRef();
-
-  const fetchFiles = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:8000/fileManager.php', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success) {
-        const uniqueFiles = Array.from(
-          new Map(data.files.map(file => [`${file.name}-${file.path}`, file])).values()
-        );
-        
-        setFiles(uniqueFiles.map(file => ({
-          ...file,
-          size: parseInt(file.size, 10)
-        })));
-      } else {
-        throw new Error(data.error || 'Failed to load files');
-      }
-    } catch (error) {
-      console.error('Error fetching files:', error);
-      if (notificationsRef.current) {
-        notificationsRef.current.showSnackbar('Error loading files. Please try again.', 'error');
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [setFiles]);
-
-  useEffect(() => {
-    fetchFiles();
-  }, [fetchFiles]);
 
   const fileIcons = {
     image: <Image color="primary" />,
@@ -104,44 +63,52 @@ const FileManager = () => {
     default: <InsertDriveFile color="primary" />,
   };
 
-  const getFileIcon = (fileType) => {
-    if (!fileType) return fileIcons.default;
-    
+  const getFileIcon = (fileType = '') => {
     const type = fileType.toLowerCase();
+
     if (type.includes('image')) return fileIcons.image;
     if (type.includes('pdf')) return fileIcons.pdf;
     if (type.includes('video')) return fileIcons.video;
     if (type.includes('word') || type.includes('document')) return fileIcons.word;
-    if (type.includes('sheet') || type.includes('excel')) return fileIcons.excel;
+    if (type.includes('sheet') || type.includes('excel') || type.includes('csv')) return fileIcons.excel;
+
     return fileIcons.default;
   };
 
   const filteredAndSortedFiles = useMemo(() => {
-    return files
-      .filter(file => 
+    const filtered = files.filter(
+      (file) =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.path.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .sort((a, b) => {
-        const direction = sortDirection === 'asc' ? 1 : -1;
-        switch (sortBy) {
-          case 'name':
-            return direction * a.name.localeCompare(b.name);
-          case 'size':
-            return direction * (parseInt(a.size) - parseInt(b.size));
-          default:
-            return direction * (new Date(b.uploadDate) - new Date(a.uploadDate));
-        }
-      });
+    );
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'name') {
+        return sortDirection === 'asc'
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
+
+      if (sortBy === 'size') {
+        return sortDirection === 'asc'
+          ? a.size - b.size
+          : b.size - a.size;
+      }
+
+      return sortDirection === 'asc'
+        ? new Date(a.uploadDate) - new Date(b.uploadDate)
+        : new Date(b.uploadDate) - new Date(a.uploadDate);
+    });
   }, [files, searchTerm, sortBy, sortDirection]);
 
   const handleSort = (newSortBy) => {
     if (sortBy === newSortBy) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(newSortBy);
-      setSortDirection('asc');
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
     }
+
+    setSortBy(newSortBy);
+    setSortDirection('asc');
   };
 
   const handleMenuClick = (event, file) => {
@@ -159,75 +126,40 @@ const FileManager = () => {
   };
 
   const confirmDelete = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/fileManager.php', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: selectedFile.id })
-      });
+    if (!selectedFile) return;
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    const result = await deleteFile(selectedFile.id);
 
-      const data = await response.json();
-      
-      if (data.success) {
-        setFiles(prevFiles => prevFiles.filter(file => file.id !== selectedFile.id));
-        setOpenDeleteDialog(false);
-        if (notificationsRef.current) {
-          notificationsRef.current.showSnackbar('File deleted successfully.', 'success');
-        }
-      } else {
-        throw new Error(data.error || 'Failed to delete file');
-      }
-    } catch (error) {
-      console.error('Delete error:', error);
-      if (notificationsRef.current) {
-        notificationsRef.current.showSnackbar('Error deleting file. Please try again.', 'error');
-      }
+    if (result.success) {
+      setOpenDeleteDialog(false);
+      notificationsRef.current?.showSnackbar('File deleted successfully.', 'success');
+    } else {
+      notificationsRef.current?.showSnackbar(result.error, 'error');
     }
   };
 
   const handleDownload = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/fileManager.php?download=true&id=${selectedFile.id}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+    if (!selectedFile) return;
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = selectedFile.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      
-      if (notificationsRef.current) {
-        notificationsRef.current.showSnackbar('Download started successfully.', 'success');
-      }
-    } catch (error) {
-      console.error('Download error:', error);
-      if (notificationsRef.current) {
-        notificationsRef.current.showSnackbar('Error downloading file. Please try again.', 'error');
-      }
+    const result = await downloadFile(selectedFile);
+
+    if (result.success) {
+      notificationsRef.current?.showSnackbar('Download started.', 'success');
+    } else {
+      notificationsRef.current?.showSnackbar(result.error, 'error');
     }
+
     handleMenuClose();
   };
 
+  const handleClearAll = () => {
+    clearAllFiles();
+    setOpenClearAllDialog(false);
+    notificationsRef.current?.showSnackbar('All demo files have been removed.', 'success');
+  };
+
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -237,11 +169,11 @@ const FileManager = () => {
   };
 
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   if (loading) {
@@ -258,17 +190,38 @@ const FileManager = () => {
         <Typography variant="h4" color="primary">
           My Files
         </Typography>
-        <Link to="/upload" className="file-manager-no-decoration">
-          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
-            Upload New File
-          </Button>
-        </Link>
+
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          {files.length > 0 && (
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteSweepIcon />}
+              onClick={() => setOpenClearAllDialog(true)}
+            >
+              Clear Demo
+            </Button>
+          )}
+
+          <Link to="/upload" className="file-manager-no-decoration">
+            <Button variant="contained" color="primary" startIcon={<AddIcon />}>
+              Upload New File
+            </Button>
+          </Link>
+        </Box>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Alert severity="info">
+          Demo project — localStorage only.
+        </Alert>
       </Box>
 
       <Card className="file-manager-styled-card">
         <div className="file-manager-list-header">
           <div className="file-manager-list-header-content">
             <Typography variant="h6">Recent Files</Typography>
+
             <div className="file-manager-search-controls">
               <TextField
                 className="file-manager-search-bar"
@@ -285,27 +238,16 @@ const FileManager = () => {
                   ),
                 }}
               />
+
               <div className="file-manager-sort-buttons">
-                <Button
-                  size="small"
-                  onClick={() => handleSort('name')}
-                  startIcon={<SortIcon />}
-                >
-                  Name {sortBy === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                <Button size="small" onClick={() => handleSort('name')} startIcon={<SortIcon />}>
+                  Name
                 </Button>
-                <Button
-                  size="small"
-                  onClick={() => handleSort('date')}
-                  startIcon={<SortIcon />}
-                >
-                  Date {sortBy === 'date' && (sortDirection === 'asc' ? '↑' : '↓')}
+                <Button size="small" onClick={() => handleSort('date')} startIcon={<SortIcon />}>
+                  Date
                 </Button>
-                <Button
-                  size="small"
-                  onClick={() => handleSort('size')}
-                  startIcon={<SortIcon />}
-                >
-                  Size {sortBy === 'size' && (sortDirection === 'asc' ? '↑' : '↓')}
+                <Button size="small" onClick={() => handleSort('size')} startIcon={<SortIcon />}>
+                  Size
                 </Button>
               </div>
             </div>
@@ -316,9 +258,8 @@ const FileManager = () => {
           <List className="file-manager-file-list">
             {filteredAndSortedFiles.map((file) => (
               <ListItem key={file.id} className="file-manager-list-item">
-                <ListItemIcon>
-                  {getFileIcon(file.type)}
-                </ListItemIcon>
+                <ListItemIcon>{getFileIcon(file.type)}</ListItemIcon>
+
                 <ListItemText
                   primary={file.name}
                   secondary={
@@ -326,16 +267,14 @@ const FileManager = () => {
                       {file.path}
                       <br />
                       <Typography variant="caption" color="text.secondary">
-                        {formatFileSize(file.size)} • Updated {formatDate(file.uploadDate)}
+                        {formatFileSize(file.size)} • Updated on {formatDate(file.uploadDate)}
                       </Typography>
                     </>
                   }
                 />
+
                 <ListItemSecondaryAction>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => handleMenuClick(e, file)}
-                  >
+                  <IconButton size="small" onClick={(e) => handleMenuClick(e, file)}>
                     <MoreVertIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -346,11 +285,12 @@ const FileManager = () => {
           <div className="file-manager-empty-state">
             <InsertDriveFile className="file-manager-empty-state-icon" />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchTerm ? 'No files found.' : "You haven't uploaded any files yet."}
+              {searchTerm ? 'No files found.' : 'You have not uploaded any files yet.'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm ? 'Try different search terms.' : 'Start uploading your first file!'}
+              {searchTerm ? 'Try a different search term.' : 'Start by uploading your first file.'}
             </Typography>
+
             {!searchTerm && (
               <Link to="/upload" className="file-manager-no-decoration">
                 <Button
@@ -367,11 +307,7 @@ const FileManager = () => {
         )}
       </Card>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
         <MenuItem onClick={handleDownload}>
           <GetApp className="file-manager-menu-icon" /> Download
         </MenuItem>
@@ -380,27 +316,32 @@ const FileManager = () => {
         </MenuItem>
       </Menu>
 
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
+      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
         <DialogTitle>Delete File</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete "{selectedFile?.name}"? This action is irreversible.
+          Are you sure you want to delete "{selectedFile?.name}"?
         </DialogContent>
         <DialogActions>
-          <Button 
-            onClick={() => setOpenDeleteDialog(false)}
-            color="inherit"
-          >
+          <Button onClick={() => setOpenDeleteDialog(false)} color="inherit">
             Cancel
           </Button>
-          <Button 
-            onClick={confirmDelete}
-            color="error"
-            variant="contained"
-          >
+          <Button onClick={confirmDelete} color="error" variant="contained">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openClearAllDialog} onClose={() => setOpenClearAllDialog(false)}>
+        <DialogTitle>Clear All Files</DialogTitle>
+        <DialogContent>
+          This will remove all files saved in the browser for this demo. Do you want to continue?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenClearAllDialog(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleClearAll} color="error" variant="contained">
+            Clear All
           </Button>
         </DialogActions>
       </Dialog>

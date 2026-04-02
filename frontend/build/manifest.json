@@ -13,7 +13,7 @@
       "sizes": "400x250"
     }
   ],
-  "start_url": "/Storify/",
+  "start_url": "/testestorify/",
   "display": "standalone",
   "theme_color": "#6C63FF",
   "background_color": "#ffffff"
