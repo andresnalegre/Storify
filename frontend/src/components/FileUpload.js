@@ -204,7 +204,7 @@ const FileUpload = () => {
 
         <Box sx={{ mt: 2 }}>
           <Alert severity="info">
-            Demo project — localStorage only.
+            Demo — localStorage only.
           </Alert>
         </Box>
 

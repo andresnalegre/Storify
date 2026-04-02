@@ -31,8 +31,8 @@ const About = () => {
           </Box>
 
           <Typography variant="body1" paragraph className="aboutSubtitle">
-            Storify is a file manager demo focused on UI/UX, allowing users to
-            upload, organize, download and delete files directly in the browser.
+            Storify is a simple file manager to upload, organize, 
+            download, and delete files in your browser.
           </Typography>
 
           <List>
@@ -42,7 +42,7 @@ const About = () => {
               </ListItemIcon>
               <ListItemText
                 primary="Stack"
-                secondary="React + Material UI + React Router"
+                secondary="React"
               />
             </ListItem>
 
@@ -52,7 +52,7 @@ const About = () => {
               </ListItemIcon>
               <ListItemText
                 primary="Storage"
-                secondary="localStorage (demo mode, no backend)"
+                secondary="localStorage"
               />
             </ListItem>
 
@@ -62,7 +62,7 @@ const About = () => {
               </ListItemIcon>
               <ListItemText
                 primary="Deploy"
-                secondary="Hosted as a static site"
+                secondary="Hosted by GitHub Pages"
               />
             </ListItem>
 
@@ -70,7 +70,7 @@ const About = () => {
               <ListItemIcon>
                 <Update color="primary" />
               </ListItemIcon>
-              <ListItemText primary="Version" secondary="2.0.0-demo" />
+              <ListItemText primary="Version" secondary="1.0.0" />
             </ListItem>
 
             <ListItem>

@@ -213,7 +213,7 @@ const FileManager = () => {
 
       <Box sx={{ mb: 2 }}>
         <Alert severity="info">
-          Demo project — localStorage only.
+          Demo — localStorage only.
         </Alert>
       </Box>
 

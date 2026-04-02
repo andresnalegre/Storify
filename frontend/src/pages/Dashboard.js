@@ -30,12 +30,12 @@ const Dashboard = () => {
         </Typography>
 
         <Typography variant="h2" sx={{ marginBottom: theme.spacing(2) }}>
-          Upload, organize and download files — all in your browser.
+          Upload, organize and download files all in your browser.
         </Typography>
 
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
           {files.length === 0
-            ? 'No files saved yet. Upload one to try the experience.'
+            ? 'Upload one to try the experience.'
             : `You have ${files.length} file${files.length !== 1 ? 's' : ''} saved in this demo.`}
         </Typography>
 
