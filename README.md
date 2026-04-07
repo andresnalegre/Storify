@@ -1,102 +1,48 @@
+<div align="center">
 
-# About Storify
+  <img src="frontend/src/assets/git.png" alt="Storify" width="280" />
 
-**Storify** is a React project where I developed with React and PHP. The goal of this project is to create a simple file storage solution that works with MariaDB and makes it easy to store and download them.
+  A file manager demo built with React + Material UI, hosted on GitHub Pages.
+
+  [![Live Demo](https://img.shields.io/badge/Live%20Demo-Storify-blue?style=flat-square)](https://andresnalegre.github.io/Storify/)
+  [![GitHub](https://img.shields.io/badge/Made%20by-Andres%20Nicolas%20Alegre-brightgreen?style=flat-square)](https://github.com/andresnalegre)
+</div>
 
 ---
+
+## About
+
+**Storify** is a demo file manager designed to easily upload, organize, download, and delete files directly in your browser.
+
+Everything runs in the browser using `localStorage`.
 
 ## Features
 
-- File Storage
+- File Upload (drag & drop or browse)
+- File Manager with search and sort
+- File Download
+- Duplicate file detection
 
----
-
-## Technologies Used
+## Stack
 
 - React
-- PHP
-- MariaDB
+- Material UI
+- localStorage
+- GitHub Pages
 
----
+## Run locally
 
-## Step 1: Clone the Repository
-
-   - Open your terminal and clone the Storify repository:
-
-     ```bash
-     git clone https://github.com/andresnalegre/Storify
-     ```
-     
-
-## Step 2: How to use the Storify app
-
-   - Navigate to the Storify Folder:
-
-     ```bash
-     cd Storify
-     ```
-     
-   - Run the project:
-
-     ```bash
-     npm start
-     ```
-     
-   **The packege.json is already configured to set up the database and run the React project automatically. Just make sure all dependencies are installed.**
-
-
-## Step 3:  Validating your data into storify at XAMPP
-1. **Access MariaDB**:
-   - Open a new terminal and run:
-
-     ```bash
-     /Applications/XAMPP/xamppfiles/bin/mysql -u root -p --socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock;
-     ```
-     
-   - Alternatively, you can access phpMyAdmin:
-
-     ```bash
-     http://localhost/phpmyadmin
-     ```
-     
-   **Make sure that XAMPP is running properly.**
-
-2. **Select the Storify Database**:  
-   - Select storify Database:
-     
-     ```sql
-     USE storify;
-     ```
-     
-3. **Analyze Stored Data**:  
-   - Get the total number of stored files:  
-
-     ```sql
-     SELECT COUNT(*) AS total_files FROM files;
-     ```
-     
-   - search all stored files:  
-
-     ```sql
-     SELECT * FROM files;
-     ```
-     
-   - Count files by type:  
-
-     ```sql
-     SELECT type, COUNT(*) AS count FROM files GROUP BY type;
-     ```
-          
----
+```bash
+git clone https://github.com/andresnalegre/Storify
+cd Storify/frontend
+npm install
+npm start
+```
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE)
-
----
+This project is licensed under the [MIT License](LICENSE).
 
 ## Contributing
 
-Contributions are welcome! If you have any improvements or new features you’d like to add, feel free to fork the repository and submit a pull request. Please ensure that your code follows the existing style and structure.
-
-[![GitHub](https://img.shields.io/badge/Made%20by-Andres%20Nicolas%20Alegre-brightgreen)](https://github.com/andresnalegre)
+Contributions are welcome! Feel free to fork the repository and submit a pull request. Please ensure your code follows the existing style and structure.
