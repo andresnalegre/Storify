@@ -82,7 +82,7 @@ const About = () => {
                   <span>
                     Developed by{' '}
                     <Link
-                      href="https://github.com/andresnalegre"
+                      href="https://andresnicolas.com/"
                       target="_blank"
                       rel="noopener noreferrer"
                       color="primary"
