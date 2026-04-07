@@ -4,12 +4,13 @@
     <meta charset="utf-8" />
     <title>Storify</title>
     <script>
-      var path = window.location.pathname.replace('/Storify', '') || '/';
+      var segment = '/Storify';
+      var path = window.location.pathname;
       var search = window.location.search;
       var hash = window.location.hash;
       var redirect = path + search + hash;
       window.location.replace(
-        '/Storify/?redirect=' + encodeURIComponent(redirect)
+        segment + '/?redirect=' + encodeURIComponent(redirect)
       );
     </script>
   </head>
