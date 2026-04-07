@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Alert,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -201,12 +200,6 @@ const FileUpload = () => {
         <Typography variant="body1" color="text.secondary">
           Drag and drop your file or click to select
         </Typography>
-
-        <Box sx={{ mt: 2 }}>
-          <Alert severity="info">
-            Demo — localStorage only.
-          </Alert>
-        </Box>
 
         <input
           type="file"

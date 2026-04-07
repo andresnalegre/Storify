@@ -20,7 +20,6 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
-  Alert,
 } from '@mui/material';
 import {
   InsertDriveFile,
@@ -209,12 +208,6 @@ const FileManager = () => {
             </Button>
           </Link>
         </Box>
-      </Box>
-
-      <Box sx={{ mb: 2 }}>
-        <Alert severity="info">
-          Demo — localStorage only.
-        </Alert>
       </Box>
 
       <Card className="file-manager-styled-card">
