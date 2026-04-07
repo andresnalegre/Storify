@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.svg';
 import '../styles/styles.css';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
