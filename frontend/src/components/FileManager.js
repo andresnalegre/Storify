@@ -33,7 +33,6 @@ import {
   Add as AddIcon,
   MoreVert as MoreVertIcon,
   Search as SearchIcon,
-  Sort as SortIcon,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useFiles } from '../context/FileContext';
@@ -46,9 +45,6 @@ const FileManager = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('date');
-  const [sortDirection, setSortDirection] = useState('desc');
-
   const notificationsRef = useRef();
 
   const fileIcons = {
@@ -72,41 +68,13 @@ const FileManager = () => {
     return fileIcons.default;
   };
 
-  const filteredAndSortedFiles = useMemo(() => {
-    const filtered = files.filter(
+  const filteredFiles = useMemo(() => {
+    return files.filter(
       (file) =>
         file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         file.path.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    return [...filtered].sort((a, b) => {
-      if (sortBy === 'name') {
-        return sortDirection === 'asc'
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
-      }
-
-      if (sortBy === 'size') {
-        return sortDirection === 'asc'
-          ? a.size - b.size
-          : b.size - a.size;
-      }
-
-      return sortDirection === 'asc'
-        ? new Date(a.uploadDate) - new Date(b.uploadDate)
-        : new Date(b.uploadDate) - new Date(a.uploadDate);
-    });
-  }, [files, searchTerm, sortBy, sortDirection]);
-
-  const handleSort = (newSortBy) => {
-    if (sortBy === newSortBy) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-      return;
-    }
-
-    setSortBy(newSortBy);
-    setSortDirection('asc');
-  };
+  }, [files, searchTerm]);
 
   const handleMenuClick = (event, file) => {
     setAnchorEl(event.currentTarget);
@@ -192,31 +160,26 @@ const FileManager = () => {
         <div className="file-manager-list-header">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Typography variant="h6">Recent Files</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-              <TextField
-                size="small"
-                variant="outlined"
-                placeholder="Search files..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Button size="small" onClick={() => handleSort('name')} startIcon={<SortIcon />}>Name</Button>
-              <Button size="small" onClick={() => handleSort('date')} startIcon={<SortIcon />}>Date</Button>
-              <Button size="small" onClick={() => handleSort('size')} startIcon={<SortIcon />}>Size</Button>
-            </Box>
+            <TextField
+              size="small"
+              variant="outlined"
+              placeholder="Search files..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Box>
         </div>
 
-        {filteredAndSortedFiles.length > 0 ? (
+        {filteredFiles.length > 0 ? (
           <List className="file-manager-file-list">
-            {filteredAndSortedFiles.map((file) => (
+            {filteredFiles.map((file) => (
               <ListItem key={file.id} className="file-manager-list-item">
                 <ListItemIcon>{getFileIcon(file.type)}</ListItemIcon>
 
