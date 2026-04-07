@@ -34,7 +34,6 @@ import {
   MoreVert as MoreVertIcon,
   Search as SearchIcon,
   Sort as SortIcon,
-  DeleteSweep as DeleteSweepIcon,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useFiles } from '../context/FileContext';
@@ -42,10 +41,9 @@ import Notifications from './Notifications';
 import '../styles/styles.css';
 
 const FileManager = () => {
-  const { files, loading, deleteFile, downloadFile, clearAllFiles } = useFiles();
+  const { files, loading, deleteFile, downloadFile } = useFiles();
   const [selectedFile, setSelectedFile] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [openClearAllDialog, setOpenClearAllDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('date');
@@ -151,12 +149,6 @@ const FileManager = () => {
     handleMenuClose();
   };
 
-  const handleClearAll = () => {
-    clearAllFiles();
-    setOpenClearAllDialog(false);
-    notificationsRef.current?.showSnackbar('All demo files have been removed.', 'success');
-  };
-
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-GB', {
       year: 'numeric',
@@ -185,39 +177,23 @@ const FileManager = () => {
 
   return (
     <Container className="file-manager-container">
-      <Box className="file-manager-header-box">
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" color="primary">
           My Files
         </Typography>
-
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          {files.length > 0 && (
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteSweepIcon />}
-              onClick={() => setOpenClearAllDialog(true)}
-            >
-              Clear Demo
-            </Button>
-          )}
-
-          <Link to="/upload" className="file-manager-no-decoration">
-            <Button variant="contained" color="primary" startIcon={<AddIcon />}>
-              Upload New File
-            </Button>
-          </Link>
-        </Box>
+        <Link to="/upload" className="file-manager-no-decoration">
+          <Button variant="contained" color="primary" startIcon={<AddIcon />}>
+            Upload New File
+          </Button>
+        </Link>
       </Box>
 
       <Card className="file-manager-styled-card">
         <div className="file-manager-list-header">
-          <div className="file-manager-list-header-content">
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Typography variant="h6">Recent Files</Typography>
-
-            <div className="file-manager-search-controls">
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
               <TextField
-                className="file-manager-search-bar"
                 size="small"
                 variant="outlined"
                 placeholder="Search files..."
@@ -231,20 +207,11 @@ const FileManager = () => {
                   ),
                 }}
               />
-
-              <div className="file-manager-sort-buttons">
-                <Button size="small" onClick={() => handleSort('name')} startIcon={<SortIcon />}>
-                  Name
-                </Button>
-                <Button size="small" onClick={() => handleSort('date')} startIcon={<SortIcon />}>
-                  Date
-                </Button>
-                <Button size="small" onClick={() => handleSort('size')} startIcon={<SortIcon />}>
-                  Size
-                </Button>
-              </div>
-            </div>
-          </div>
+              <Button size="small" onClick={() => handleSort('name')} startIcon={<SortIcon />}>Name</Button>
+              <Button size="small" onClick={() => handleSort('date')} startIcon={<SortIcon />}>Date</Button>
+              <Button size="small" onClick={() => handleSort('size')} startIcon={<SortIcon />}>Size</Button>
+            </Box>
+          </Box>
         </div>
 
         {filteredAndSortedFiles.length > 0 ? (
@@ -320,21 +287,6 @@ const FileManager = () => {
           </Button>
           <Button onClick={confirmDelete} color="error" variant="contained">
             Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={openClearAllDialog} onClose={() => setOpenClearAllDialog(false)}>
-        <DialogTitle>Clear All Files</DialogTitle>
-        <DialogContent>
-          This will remove all files saved in the browser for this demo. Do you want to continue?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenClearAllDialog(false)} color="inherit">
-            Cancel
-          </Button>
-          <Button onClick={handleClearAll} color="error" variant="contained">
-            Clear All
           </Button>
         </DialogActions>
       </Dialog>
