@@ -16,7 +16,7 @@
 
 ## About
 
-**Storify** is a file manager designed to easily upload, organize, download, and delete files directly in your browser. The live version runs in the browser using `localStorage` and does not use a database.
+**Storify** is a file manager designed to easily upload, organize, download, and delete files directly in your browser. The live demo version runs in the browser using `localStorage` and does not use a database.
 
 ## Features
 
