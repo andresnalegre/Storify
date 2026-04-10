@@ -2,7 +2,7 @@
   <img src="frontend/src/assets/git.png" alt="Storify" width="280" />
 
 
-  A file manager demo built with React + Material UI, hosted on GitHub Pages.
+  Managing your files has never been easier.
 
   ![React](https://img.shields.io/badge/React-18-blue?logo=react)
   ![MUI](https://img.shields.io/badge/Material_UI-5-purple?logo=mui)
@@ -16,7 +16,7 @@
 
 ## About
 
-**Storify** is a demo file manager designed to easily upload, organize, download, and delete files directly in your browser. Everything runs in the browser using `localStorage`.
+**Storify** is a file manager designed to easily upload, organize, download, and delete files directly in your browser. The live version runs in the browser using `localStorage` and does not use a database.
 
 ## Features
 
@@ -24,34 +24,6 @@
 - File manager with search and sort
 - File download
 - Duplicate file detection
-
----
-
-## Run locally
-
-### Requirements
-
-- Node.js 18+
-
-### Setup
-
-```bash
-git clone https://github.com/andresnalegre/Storify
-cd Storify/frontend
-npm install
-npm start
-```
-
----
-
-## Tech stack
-
-| Layer   | Technology    |
-|---------|---------------|
-| UI      | React 18      |
-| Design  | Material UI 5 |
-| Storage | localStorage  |
-| Deploy  | GitHub Pages  |
 
 ---
 
