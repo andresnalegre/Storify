@@ -63,7 +63,6 @@ const FileUpload = () => {
 
   const notificationsRef = useRef();
 
-
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFile = e.dataTransfer.files[0];
@@ -83,7 +82,7 @@ const FileUpload = () => {
     if (!selectedFile) return;
 
     if (selectedFile.size > maxFileSize) {
-      setError(`Files must be under 80KB.`);
+      setError('Files must be under 80KB.');
       return;
     }
 
@@ -197,7 +196,7 @@ const FileUpload = () => {
         </Typography>
 
         <Typography variant="body1" color="text.secondary">
-          Drag and drop your file or click to select
+          Tap or drop a file to get started
         </Typography>
 
         <input
@@ -212,7 +211,7 @@ const FileUpload = () => {
           <DropZone onDrop={handleDrop} onDragOver={handleDragOver}>
             <CloudUpload className="file-upload-dropzone-icon" />
             <Typography variant="h6" color="primary" gutterBottom>
-              file ? "File selected" : "Drop it here"
+              {file ? 'File selected' : 'Drop it here'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               or tap to browse
