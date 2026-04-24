@@ -199,7 +199,7 @@ const FileManager = () => {
           <div className="file-manager-empty-state">
             <InsertDriveFile className="file-manager-empty-state-icon" />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchTerm ? 'No files found.' : 'You have not uploaded any files yet.'}
+              {searchTerm ? 'No files found.' : 'Nobody has uploaded any files yet.'}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {searchTerm ? 'Try a different search term.' : 'Start by uploading your first file.'}

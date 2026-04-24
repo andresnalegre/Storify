@@ -212,10 +212,10 @@ const FileUpload = () => {
           <DropZone onDrop={handleDrop} onDragOver={handleDragOver}>
             <CloudUpload className="file-upload-dropzone-icon" />
             <Typography variant="h6" color="primary" gutterBottom>
-              {file ? 'File selected' : 'Drop your file here'}
+              file ? "File selected" : "Drop it here"
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              or click to browse from your computer
+              or tap to browse
             </Typography>
             <Typography
               variant="caption"
@@ -273,7 +273,7 @@ const FileUpload = () => {
           startIcon={<CloudUpload />}
           className="file-upload-button"
         >
-          {uploading ? 'Saving...' : 'Upload File'}
+          {uploading ? 'Saving...' : 'Save File'}
         </Button>
       </UploadCard>
 
