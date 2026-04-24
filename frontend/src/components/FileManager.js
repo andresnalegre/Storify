@@ -58,13 +58,11 @@ const FileManager = () => {
 
   const getFileIcon = (fileType = '') => {
     const type = fileType.toLowerCase();
-
     if (type.includes('image')) return fileIcons.image;
     if (type.includes('pdf')) return fileIcons.pdf;
     if (type.includes('video')) return fileIcons.video;
     if (type.includes('word') || type.includes('document')) return fileIcons.word;
     if (type.includes('sheet') || type.includes('excel') || type.includes('csv')) return fileIcons.excel;
-
     return fileIcons.default;
   };
 
@@ -92,9 +90,7 @@ const FileManager = () => {
 
   const confirmDelete = async () => {
     if (!selectedFile) return;
-
     const result = await deleteFile(selectedFile.id);
-
     if (result.success) {
       setOpenDeleteDialog(false);
       notificationsRef.current?.showSnackbar('File deleted successfully.', 'success');
@@ -105,15 +101,12 @@ const FileManager = () => {
 
   const handleDownload = async () => {
     if (!selectedFile) return;
-
     const result = await downloadFile(selectedFile);
-
     if (result.success) {
       notificationsRef.current?.showSnackbar('Download started.', 'success');
     } else {
       notificationsRef.current?.showSnackbar(result.error, 'error');
     }
-
     handleMenuClose();
   };
 
@@ -147,7 +140,7 @@ const FileManager = () => {
     <Container className="file-manager-container">
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
         <Typography variant="h4" color="primary">
-          My Files
+          Files
         </Typography>
         <Link to="/upload" className="file-manager-no-decoration">
           <Button variant="contained" color="primary" startIcon={<AddIcon />}>
@@ -159,7 +152,7 @@ const FileManager = () => {
       <Card className="file-manager-styled-card">
         <div className="file-manager-list-header">
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-            <Typography variant="h6">Recent Files</Typography>
+            <Typography variant="h6">Shared Files</Typography>
             <TextField
               size="small"
               variant="outlined"
@@ -182,7 +175,6 @@ const FileManager = () => {
             {filteredFiles.map((file) => (
               <ListItem key={file.id} className="file-manager-list-item">
                 <ListItemIcon>{getFileIcon(file.type)}</ListItemIcon>
-
                 <ListItemText
                   primary={file.name}
                   secondary={
@@ -195,7 +187,6 @@ const FileManager = () => {
                     </>
                   }
                 />
-
                 <ListItemSecondaryAction>
                   <IconButton size="small" onClick={(e) => handleMenuClick(e, file)}>
                     <MoreVertIcon />
@@ -213,7 +204,6 @@ const FileManager = () => {
             <Typography variant="body2" color="text.secondary">
               {searchTerm ? 'Try a different search term.' : 'Start by uploading your first file.'}
             </Typography>
-
             {!searchTerm && (
               <Link to="/upload" className="file-manager-no-decoration">
                 <Button

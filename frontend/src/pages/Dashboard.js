@@ -26,7 +26,7 @@ const Dashboard = () => {
         </Typography>
 
         <Typography variant="h2" sx={{ marginBottom: theme.spacing(2) }}>
-          Upload, organize and download files all in your browser.
+          Built for sharing files.
         </Typography>
 
         <Stack
@@ -37,17 +37,16 @@ const Dashboard = () => {
         >
           <Link to="/upload" style={{ textDecoration: 'none' }}>
             <Button variant="contained" color="primary" startIcon={<CloudUpload />}>
-              Start Uploading
+              Upload File
             </Button>
           </Link>
 
           <Link to="/files" style={{ textDecoration: 'none' }}>
             <Button variant="outlined" color="primary" startIcon={<FolderOpen />}>
-              View My Files
+              View Files
             </Button>
           </Link>
         </Stack>
-
       </Box>
     </Box>
   );

@@ -63,7 +63,6 @@ const FileUpload = () => {
 
   const notificationsRef = useRef();
 
-  const maxSizeInMb = (maxFileSize / (1024 * 1024)).toFixed(0);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -84,7 +83,7 @@ const FileUpload = () => {
     if (!selectedFile) return;
 
     if (selectedFile.size > maxFileSize) {
-      setError(`File exceeds the ${maxSizeInMb}MB limit for this demo.`);
+      setError(`Files must be under 80KB.`);
       return;
     }
 
@@ -223,7 +222,7 @@ const FileUpload = () => {
               color="text.secondary"
               className="file-upload-textfield-margin"
             >
-              Demo limit: {maxSizeInMb}MB per file
+              Max file size: 80KB
             </Typography>
           </DropZone>
         </label>
@@ -248,7 +247,7 @@ const FileUpload = () => {
           label="URL Path"
           value={urlPath}
           onChange={(e) => setUrlPath(e.target.value)}
-          placeholder="/documents/example.pdf"
+          placeholder="/documents"
           className="file-upload-textfield-margin"
         />
 

@@ -31,8 +31,7 @@ const About = () => {
           </Box>
 
           <Typography variant="body1" paragraph className="aboutSubtitle">
-            Storify is a simple file manager to upload, organize, 
-            download, and delete files in your browser.
+            Storify is a shared file management platform that allows anyone to upload, access, and share files from any device.
           </Typography>
 
           <List>
@@ -52,7 +51,7 @@ const About = () => {
               </ListItemIcon>
               <ListItemText
                 primary="Storage"
-                secondary="localStorage"
+                secondary="JSONBin + Cloudflare Worker"
               />
             </ListItem>
 

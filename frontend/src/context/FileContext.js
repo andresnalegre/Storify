@@ -136,7 +136,7 @@ export const FileProvider = ({ children }) => {
 
       if (binSize > MAX_BIN_BYTES) {
         throw new Error(
-          `Storage limit reached. This file would exceed the 80KB cloud limit. Delete some files first.`
+          `Files must be under 80KB.`
         );
       }
 
@@ -175,7 +175,7 @@ export const FileProvider = ({ children }) => {
 
       if (binSize > MAX_BIN_BYTES) {
         throw new Error(
-          `Storage limit reached. This file would exceed the 80KB cloud limit. Delete some files first.`
+          `Files must be under 80KB.`
         );
       }
 

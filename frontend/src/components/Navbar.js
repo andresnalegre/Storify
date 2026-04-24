@@ -69,7 +69,7 @@ const Navbar = () => {
 
   const navigationItems = [
     { path: '/upload', label: 'Upload File' },
-    { path: '/files', label: 'My Files' },
+    { path: '/files', label: 'Files' },
     { path: '/about', label: 'About' },
   ];
 
